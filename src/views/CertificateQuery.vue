@@ -95,6 +95,7 @@ export default {
       // 使用API服务查询证书
       queryCertificate(this.name, this.certificateNo)
         .then(response => {
+          console.log("查询成功",response)
           // 将数据存储到本地，并跳转到详情页
           localStorage.setItem('certificateDetail', JSON.stringify(response.data))
           this.$router.push('/detail')
