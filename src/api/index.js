@@ -18,11 +18,13 @@ export const queryCertificate = (name, certificateNo) => {
 }
 
 // 真实发送邮件API
-export const sendCertificateEmail = (email, certificateInfo) => {
+export const sendCertificateEmail = (email, certificateInfo, subject, content) => {
   // 调用真实的邮件发送API
   return api.post('/api/td/sendCertificateEmail', {
     email: email,
-    certificateInfo: certificateInfo
+    serialNo: certificateInfo.SerialNo,
+    subject: subject || `${certificateInfo.StudentName}的培训证书`,
+    content: content || `尊敬的${certificateInfo.StudentName}：\n\n您好！\n\n附件是您参加"${certificateInfo.TrainingProject}"的培训证书电子版，请查收。\n\n祝好！`
   })
 }
 

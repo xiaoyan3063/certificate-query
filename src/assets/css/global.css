@@ -10,16 +10,16 @@ body, html {
 /* 导航栏样式 */
 .van-nav-bar {
   /* background-color: #1989fa; */
-  background-color: #fe9120;
+  /* background-color: #fe9120; */
 }
 
 .van-nav-bar .van-nav-bar__title {
-  color: #fff;
-  font-size: 18px;
+  color: #000;
+  font-size: 16px;
 }
 
 .van-nav-bar .van-icon {
-  color: #fff !important;
+  color: #000 !important;
 }
 
 /* 按钮样式 */

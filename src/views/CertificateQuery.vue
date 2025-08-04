@@ -22,7 +22,7 @@
             <input 
               v-model="name" 
               placeholder="请输入姓名" 
-              style="width: 100%; font-size: 14px; color: #969799; background-color: transparent; border: none; outline: none;"
+              style="width: 100%; font-size: 14px; color: #323233; background-color: transparent; border: none; outline: none;"
             />
           </template>
         </van-field>
@@ -44,7 +44,7 @@
             <input 
               v-model="certificateNo" 
               placeholder="请输入证书编码" 
-              style="width: 100%; font-size: 14px; color: #969799; background-color: transparent; border: none; outline: none; "
+              style="width: 100%; font-size: 14px; color: #323233; background-color: transparent; border: none; outline: none; "
               @input="formatCertificateNo"
             />
           </template>
@@ -97,11 +97,11 @@ export default {
         .then(response => {
           console.log("查询成功",response)
           // 跳转到详情页,并传参
-          if (response && response.data && response.data.resultData && response.data.resultData.length > 0){
+          if (response && response.data && response.data.ResultData && response.data.ResultData.length > 0){
               this.$router.push({
                 name: 'CertificateDetail',
                 params: {
-                  detailData: response.data.resultData[0]
+                  detailData: response.data.ResultData[0]
                 }
               })
           } else {

@@ -8,42 +8,67 @@
     
     <div class="detail-container">
       <van-cell-group>
-        <van-cell title="姓名" :value="certificateInfo.studentName" label-class="cell-title" value-class="cell-value" />
-        <van-cell title="发证年份" :value="certificateInfo.year" label-class="cell-title" value-class="cell-value" />
-        <van-cell title="证书编码" :value="certificateInfo.certificateCode" label-class="cell-title" value-class="cell-value" />
-        <van-cell title="培训项目" :value="certificateInfo.trainingProject" label-class="cell-title" value-class="cell-value" />
-        <van-cell title="培训开始日期" :value="certificateInfo.trainingStartDate" label-class="cell-title" value-class="cell-value" />
-        <van-cell title="培训结束日期" :value="certificateInfo.trainingEndDate" label-class="cell-title" value-class="cell-value" />
-        <van-cell title="培训方式" :value="certificateInfo.trainingMethod" label-class="cell-title" value-class="cell-value" />
-        <van-cell title="证书有效期" :value="certificateInfo.certificateValidity" label-class="cell-title" value-class="cell-value" />
+        <van-cell title="姓名" :value="certificateInfo.StudentName" label-class="cell-title" value-class="cell-value" />
+        <van-cell title="发证年份" :value="certificateInfo.Year" label-class="cell-title" value-class="cell-value" />
+        <van-cell title="证书编码" :value="certificateInfo.CertificateCode" label-class="cell-title" value-class="cell-value" />
+        <van-cell title="培训项目" :value="certificateInfo.TrainingProject" label-class="cell-title" value-class="cell-value" />
+        <van-cell title="培训开始日期" :value="certificateInfo.TrainingStartDate" label-class="cell-title" value-class="cell-value" />
+        <van-cell title="培训结束日期" :value="certificateInfo.TrainingEndDate" label-class="cell-title" value-class="cell-value" />
+        <van-cell title="培训方式" :value="certificateInfo.TrainingMethod" label-class="cell-title" value-class="cell-value" />
+        <van-cell title="证书有效期" :value="certificateInfo.ExpirationDate" label-class="cell-title" value-class="cell-value" />
       </van-cell-group>
-      
-      <div class="email-form">
-        <van-field
-          v-model="email"
-          label="接收邮箱"
-          placeholder="请输入有效邮箱"
-          :rules="[
-            { required: true, message: '请填写邮箱地址' },
-            { pattern: /^[^\s@]+@[^\s@]+\.[^\s@]+$/, message: '请输入正确的邮箱地址' }
-          ]"
-        />
-        <p class="email-tip">注意：如需电子版，请填写接收邮箱！</p>
-      </div>
       
       <div class="button-container">
         <van-button 
           block 
           type="warning" 
           class="send-button"
-          :loading="loading"
-          loading-text="发送中..."
-          @click="sendEmail"
+          @click="showEmailConfirmDialog"
         >
           发送邮件
         </van-button>
       </div>
     </div>
+    
+    <!-- 邮件确认弹窗 -->
+    <van-dialog
+      v-model="showEmailDialog"
+      title="发送证书邮件"
+      show-cancel-button
+      @confirm="confirmSendEmail"
+      :before-close="handleBeforeClose"
+      cancel-button-text="取消"
+      confirm-button-text="发送"
+    >
+      <div class="email-dialog-content">
+        <div class="email-field">
+          <span class="field-label"><span class="required">*</span> 收件人</span>
+          <input 
+            type="text" 
+            v-model="email" 
+            placeholder="请输入收件人邮箱" 
+            class="field-input" 
+            :class="{'error-input': emailError}"
+          />
+          <span v-if="emailError" class="error-message">{{emailErrorMsg}}</span>
+        </div>
+        <div class="email-field">
+          <span class="field-label"><span class="required">*</span> 主题</span>
+          <input 
+            type="text" 
+            v-model="emailSubject" 
+            placeholder="邮件主题" 
+            class="field-input"
+            :class="{'error-input': subjectError}" 
+          />
+          <span v-if="subjectError" class="error-message">请输入邮件主题</span>
+        </div>
+        <div class="email-field email-content">
+          <span class="field-label">内容</span>
+          <textarea v-model="emailContent" placeholder="邮件内容" class="content-textarea"></textarea>
+        </div>
+      </div>
+    </van-dialog>
   </div>
 </template>
 
@@ -55,17 +80,23 @@ export default {
   data() {
     return {
       certificateInfo: {
-        studentName: '',
-        year: '',
-        certificateCode: '',
-        trainingProject: '',
-        trainingStartDate: '',
-        trainingEndDate: '',
-        trainingMethod: '',
-        certificateValidity: ''
+        StudentName: '',
+        Year: '',
+        CertificateCode: '',
+        TrainingProject: '',
+        TrainingStartDate: '',
+        TrainingEndDate: '',
+        TrainingMethod: '',
+        ExpirationDate: ''
       },
       email: '',
-      loading: false
+      loading: false,
+      showEmailDialog: false,
+      emailSubject: '',
+      emailContent: '',
+      emailError: false,
+      emailErrorMsg: '',
+      subjectError: false
     }
   },
   created() {
@@ -74,6 +105,10 @@ export default {
     const detailData = this.$route.params.detailData
     if (detailData) {
       this.certificateInfo = detailData
+      // 设置默认邮件主题和内容
+      this.email = this.certificateInfo.StudentEmail
+      this.emailSubject = `${this.certificateInfo.StudentName}的培训证书`
+      this.emailContent = `尊敬的${this.certificateInfo.StudentName}：\n\n您好！\n\n附件是您参加"${this.certificateInfo.TrainingProject}"的培训证书电子版，请查收。\n\n祝好！`
     } else {
       // 如果没有数据，返回查询页面
       this.$toast.fail('未找到证书信息，请重新查询')
@@ -85,25 +120,74 @@ export default {
       // 返回上一页
       this.$router.go(-1)
     },
-    sendEmail() {
-      if (!this.validateEmail(this.email)) {
-        this.$toast.fail('请输入有效的邮箱地址')
-        return
+    // 显示邮件确认对话框
+    showEmailConfirmDialog() {
+      // if (!this.validateEmail(this.email)) {
+      //   this.$toast.fail('请输入有效的邮箱地址')
+      //   return
+      // }
+      
+      this.showEmailDialog = true
+    },
+    // 确认发送邮件
+    confirmSendEmail() {
+      // 验证表单
+      if (!this.validateEmailForm()) {
+        return false
       }
       
       this.loading = true
-      // 使用API服务发送邮件
-      sendCertificateEmail(this.email, this.certificateInfo)
+      // 使用API服务发送邮件，传递邮件主题和内容
+      sendCertificateEmail(this.email, this.certificateInfo, this.emailSubject, this.emailContent)
         .then(() => {
           this.$toast.success('邮件发送成功')
+          this.showEmailDialog = false
         })
         .catch(error => {
-          this.$toast.fail('邮件发送失败，请稍后重试')
+          this.$toast.fail('邮件发送失败:'+error.response.data)
           console.error('邮件发送失败:', error)
         })
         .finally(() => {
           this.loading = false
         })
+    },
+    // 处理弹窗关闭前的逻辑
+    handleBeforeClose(action, done) {
+      if (action === 'confirm') {
+        // 如果是确认按钮，验证表单
+        if (!this.validateEmailForm()) {
+          done(false) // 阻止关闭
+          return
+        }
+      }
+      done() // 允许关闭
+    },
+    // 验证邮件表单
+    validateEmailForm() {
+      // 重置错误状态
+      this.emailError = false;
+      this.subjectError = false;
+      
+      let isValid = true;
+      
+      // 验证收件人邮箱
+      if (!this.email || this.email.trim() === '') {
+        this.emailError = true;
+        this.emailErrorMsg = '请输入收件人邮箱';
+        isValid = false;
+      } else if (!this.validateEmail(this.email)) {
+        this.emailError = true;
+        this.emailErrorMsg = '请输入有效的邮箱地址';
+        isValid = false;
+      }
+      
+      // 验证邮件主题
+      if (!this.emailSubject || this.emailSubject.trim() === '') {
+        this.subjectError = true;
+        isValid = false;
+      }
+      
+      return isValid;
     },
     validateEmail(email) {
       const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
@@ -128,20 +212,6 @@ export default {
   padding-bottom: 80px;
 }
 
-.email-form {
-  margin-top: 10px;
-  background-color: #fff;
-  border-radius: 8px;
-  padding: 5px 0;
-}
-
-.email-tip {
-  font-size: 12px;
-  color: #999;
-  text-align: left;
-  margin: 4px 0 0 16px;
-  padding-bottom: 8px;
-}
 
 .button-container {
   position: fixed;
@@ -158,6 +228,73 @@ export default {
   height: 35px;
   font-size: 15px;
   font-weight: 500;
+}
+
+/* 邮件弹窗样式 */
+.email-dialog-content {
+  padding: 10px;
+  box-sizing: border-box;
+  width: 100%;
+}
+
+.email-field {
+  margin-bottom: 15px;
+  text-align: left;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.field-label {
+  display: block;
+  font-size: 14px;
+  color: #323233;
+  margin-bottom: 5px;
+}
+
+.field-input {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #ebedf0;
+  border-radius: 4px;
+  font-size: 14px;
+  box-sizing: border-box;
+}
+
+.email-content {
+  margin-bottom: 0;
+}
+
+.content-textarea {
+  width: 100%;
+  height: 100px;
+  padding: 8px;
+  border: 1px solid #ebedf0;
+  border-radius: 4px;
+  font-size: 14px;
+  resize: none;
+  box-sizing: border-box;
+}
+
+/* 调整弹窗宽度 */
+::v-deep .van-dialog {
+  width: 90%;
+  max-width: 320px;
+}
+
+.required {
+  color: #ee0a24;
+  margin-right: 2px;
+}
+
+.error-input {
+  border-color: #ee0a24;
+}
+
+.error-message {
+  color: #ee0a24;
+  font-size: 12px;
+  margin-top: 4px;
+  display: block;
 }
 
 ::v-deep .van-field__label{
@@ -196,5 +333,10 @@ export default {
 ::v-deep .van-cell__value {
   margin-left: 0;
   text-align: left;
+}
+::v-deep .van-dialog__confirm {
+    color: white;
+    background-color: #fe9120;
+    /* #0F59A4; */
 }
 </style>
