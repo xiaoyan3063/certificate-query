@@ -8,14 +8,14 @@
     
     <div class="detail-container">
       <van-cell-group>
-        <van-cell title="姓名" :value="certificateInfo.name" label-class="cell-title" value-class="cell-value" />
-        <van-cell title="发证年份" :value="certificateInfo.issueYear" label-class="cell-title" value-class="cell-value" />
-        <van-cell title="证书编码" :value="certificateInfo.certificateNo" label-class="cell-title" value-class="cell-value" />
+        <van-cell title="姓名" :value="certificateInfo.studentName" label-class="cell-title" value-class="cell-value" />
+        <van-cell title="发证年份" :value="certificateInfo.year" label-class="cell-title" value-class="cell-value" />
+        <van-cell title="证书编码" :value="certificateInfo.certificateCode" label-class="cell-title" value-class="cell-value" />
         <van-cell title="培训项目" :value="certificateInfo.trainingProject" label-class="cell-title" value-class="cell-value" />
-        <van-cell title="培训开始日期" :value="certificateInfo.startDate" label-class="cell-title" value-class="cell-value" />
-        <van-cell title="培训结束日期" :value="certificateInfo.endDate" label-class="cell-title" value-class="cell-value" />
+        <van-cell title="培训开始日期" :value="certificateInfo.trainingStartDate" label-class="cell-title" value-class="cell-value" />
+        <van-cell title="培训结束日期" :value="certificateInfo.trainingEndDate" label-class="cell-title" value-class="cell-value" />
         <van-cell title="培训方式" :value="certificateInfo.trainingMethod" label-class="cell-title" value-class="cell-value" />
-        <van-cell title="证书有效期" :value="certificateInfo.expireDate" label-class="cell-title" value-class="cell-value" />
+        <van-cell title="证书有效期" :value="certificateInfo.certificateValidity" label-class="cell-title" value-class="cell-value" />
       </van-cell-group>
       
       <div class="email-form">
@@ -55,24 +55,25 @@ export default {
   data() {
     return {
       certificateInfo: {
-        name: '',
-        issueYear: '',
-        certificateNo: '',
+        studentName: '',
+        year: '',
+        certificateCode: '',
         trainingProject: '',
-        startDate: '',
-        endDate: '',
+        trainingStartDate: '',
+        trainingEndDate: '',
         trainingMethod: '',
-        expireDate: ''
+        certificateValidity: ''
       },
       email: '',
       loading: false
     }
   },
   created() {
-    // 从本地存储获取证书详情数据
-    const detailData = localStorage.getItem('certificateDetail')
+    // 从路由参数获取证书详情数据
+    console.log('证书详细数据',this.$route.params.detailData)
+    const detailData = this.$route.params.detailData
     if (detailData) {
-      this.certificateInfo = JSON.parse(detailData)
+      this.certificateInfo = detailData
     } else {
       // 如果没有数据，返回查询页面
       this.$toast.fail('未找到证书信息，请重新查询')

@@ -96,9 +96,19 @@ export default {
       queryCertificate(this.name, this.certificateNo)
         .then(response => {
           console.log("查询成功",response)
-          // 将数据存储到本地，并跳转到详情页
-          localStorage.setItem('certificateDetail', JSON.stringify(response.data))
-          this.$router.push('/detail')
+          // 跳转到详情页,并传参
+          if (response && response.data && response.data.resultData && response.data.resultData.length > 0){
+              this.$router.push({
+                name: 'CertificateDetail',
+                params: {
+                  detailData: response.data.resultData[0]
+                }
+              })
+          } else {
+            // 如果没有数据，提示
+            this.$toast.fail('未找到证书信息，请重新查询')
+          }
+          
         })
         .catch(error => {
           // 处理错误情况
