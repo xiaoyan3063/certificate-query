@@ -2,14 +2,15 @@ import axios from 'axios'
 
 // 创建axios实例
 const api = axios.create({
-  baseURL: process.env.VUE_APP_API_URL || '/api',
+  // baseURL: process.env.VUE_APP_API_URL || '/api',
+  baseURL: '/api',  // 使用相对路径，通过代理访问
   timeout: 5000
 })
 
 // 真实证书查询API
 export const queryCertificate = (name, certificateNo) => {
   // 调用真实API接口
-  return api.get('/api/td/getCertificate', {
+  return api.get('/td/getCertificate', {
     params: {
       name: name,
       code: certificateNo
@@ -20,7 +21,7 @@ export const queryCertificate = (name, certificateNo) => {
 // 真实发送邮件API
 export const sendCertificateEmail = (email, certificateInfo, subject, content) => {
   // 调用真实的邮件发送API
-  return api.post('/api/td/sendCertificateEmail', {
+  return api.post('/td/sendCertificateEmail', {
     email: email,
     serialNo: certificateInfo.SerialNo,
     subject: subject || `${certificateInfo.StudentName}的培训证书`,

@@ -16,6 +16,7 @@
         <van-cell title="培训结束日期" :value="certificateInfo.TrainingEndDate" label-class="cell-title" value-class="cell-value" />
         <van-cell title="培训方式" :value="certificateInfo.TrainingMethod" label-class="cell-title" value-class="cell-value" />
         <van-cell title="证书有效期" :value="certificateInfo.ExpirationDate" label-class="cell-title" value-class="cell-value" />
+        <van-cell title="学员邮箱" :value="certificateInfo.StudentEmail" label-class="cell-title" value-class="cell-value" />
       </van-cell-group>
       
       <div class="button-container">
@@ -87,7 +88,8 @@ export default {
         TrainingStartDate: '',
         TrainingEndDate: '',
         TrainingMethod: '',
-        ExpirationDate: ''
+        ExpirationDate: '',
+        StudentEmail: '',
       },
       email: '',
       loading: false,
