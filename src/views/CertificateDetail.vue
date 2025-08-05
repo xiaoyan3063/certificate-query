@@ -268,7 +268,7 @@ export default {
 
 .content-textarea {
   width: 100%;
-  height: 100px;
+  height: 180px;
   padding: 8px;
   border: 1px solid #ebedf0;
   border-radius: 4px;
