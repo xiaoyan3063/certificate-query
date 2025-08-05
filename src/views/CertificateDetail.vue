@@ -8,15 +8,15 @@
     
     <div class="detail-container">
       <van-cell-group>
-        <van-cell title="姓名" :value="certificateInfo.StudentName" label-class="cell-title" value-class="cell-value" />
-        <van-cell title="发证年份" :value="certificateInfo.Year" label-class="cell-title" value-class="cell-value" />
-        <van-cell title="证书编码" :value="certificateInfo.CertificateCode" label-class="cell-title" value-class="cell-value" />
-        <van-cell title="培训项目" :value="certificateInfo.TrainingProject" label-class="cell-title" value-class="cell-value" />
-        <van-cell title="培训开始日期" :value="certificateInfo.TrainingStartDate" label-class="cell-title" value-class="cell-value" />
-        <van-cell title="培训结束日期" :value="certificateInfo.TrainingEndDate" label-class="cell-title" value-class="cell-value" />
-        <van-cell title="培训方式" :value="certificateInfo.TrainingMethod" label-class="cell-title" value-class="cell-value" />
-        <van-cell title="证书有效期" :value="certificateInfo.ExpirationDate" label-class="cell-title" value-class="cell-value" />
-        <van-cell title="学员邮箱" :value="certificateInfo.StudentEmail" label-class="cell-title" value-class="cell-value" />
+        <van-cell title="姓名" :value="certificateInfo.StudentName || '暂无'" label-class="cell-title" value-class="cell-value" />
+        <van-cell title="发证年份" :value="certificateInfo.Year || '暂无'" label-class="cell-title" value-class="cell-value" />
+        <van-cell title="证书编码" :value="certificateInfo.CertificateCode || '暂无'" label-class="cell-title" value-class="cell-value" />
+        <van-cell title="培训项目" :value="certificateInfo.TrainingProject || '暂无'" label-class="cell-title" value-class="cell-value" />
+        <van-cell title="培训开始日期" :value="certificateInfo.TrainingStartDate || '暂无'" label-class="cell-title" value-class="cell-value" />
+        <van-cell title="培训结束日期" :value="certificateInfo.TrainingEndDate || '暂无'" label-class="cell-title" value-class="cell-value" />
+        <van-cell title="培训方式" :value="certificateInfo.TrainingMethod || '暂无'" label-class="cell-title" value-class="cell-value" />
+        <van-cell title="证书有效期" :value="certificateInfo.ExpirationDate || '暂无'" label-class="cell-title" value-class="cell-value" />
+        <van-cell title="学员邮箱" :value="certificateInfo.StudentEmail || '暂无'" label-class="cell-title" value-class="cell-value" />
       </van-cell-group>
       
       <div class="button-container">
